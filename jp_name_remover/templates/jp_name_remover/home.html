@@ -1,0 +1,85 @@
+{% extends 'jp_name_remover/base.html' %} {% block content %}
+
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Jリーグパックの日本語表記削除ツール</h1>
+    <p class="lead">
+      このツールでJリーグパックの日本語表記を削除する。ローマ字表記でゲームを遊びたい方はこのツールを利用してください。
+    </p>
+  </div>
+</div>
+
+{% if error %}
+<div class="container">
+  <div class="alert alert-danger">{{ error }}</div>
+</div>
+{% endif %}
+
+<form id="convertForm" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="hidden" name="rand_token" id="downloadToken" />
+  <div class="container">
+    <div class="alert alert-primary">
+      <div class="custom-file">
+        <input
+          type="file"
+          name="inputFile"
+          class="custom-file-input"
+          id="inputFile"
+        />
+        <label
+          class="custom-file-label"
+          for="inputFile"
+          data-browse="選択"
+        ></label>
+      </div>
+    </div>
+    <div class="text-center">
+      <button
+        type="submit"
+        id="submitButton"
+        class="btn btn-primary btn-lg btn-block"
+      >
+        <span id="submitButtonNormal">転換</span>
+        <span id="submitButtonLoading">
+          <span
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          しばらくお待ち下さい…
+        </span>
+      </button>
+    </div>
+  </div>
+</form>
+
+<div class="container mt-2">
+  <div class="alert alert-secondary">
+    <h4>fmfファイルをXMLに変換</h4>
+    <p>
+      まず、fmfファイルはエンコードされたファイルなので、そのままでは変換できません。
+    </p>
+    <p>
+      FMのエディターを開いて、fmfファイルをXMLにエクスポートすること。やり方は転換したいfmfファイルを読み込み、そのままエクスポートを選択する。
+    </p>
+    <hr />
+    <h4>転換ツールを利用</h4>
+    <p>
+      作成されたXMLファイルを上記のツールにアップロードし、「転換」をクリックする。
+    </p>
+    <p>
+      転換の時間はファイルサイズによりますが、しばらくしてから日本語表記が削除されたXMLファイルがダウンロードできるようになります。
+    </p>
+    <hr />
+    <h4>インポート</h4>
+    <p>
+      再度、FMのエディターを開いて、新たな作成されたXMLファイルをインポート（インポートは何もない状態でしか出来ない）し、そのままFMFファイルをセーブする。
+    </p>
+    <p>
+      FMFファイルに戻る理由は、XMLそのままではファイルサイズが大きすぎるからです。
+    </p>
+  </div>
+</div>
+
+{% endblock %}

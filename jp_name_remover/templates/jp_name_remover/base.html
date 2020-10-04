@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>FM Jリーグパック ツール - 日本語表記削除ツール</title>
+    {% load static %}
+
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+</head>
+
+<body>
+<nav class="navbar navbar-light bg-light">
+  <a class="navbar-brand" href="/remover/">日本語表記削除ツール</a>
+</nav>
+
+{% block content %}{% endblock %}
+
+<script>
+function getCookie(name) {
+  var parts = document.cookie.split(name + "=");
+  if (parts.length == 2) return parts.pop().split(";").shift();
+}
+
+function expireCookie(cName) {
+  document.cookie =
+    encodeURIComponent(cName) +
+    "=deleted; SameSite=None; Secure; expires=" +
+    new Date(0).toUTCString();
+}
+
+function setFormToken() {
+    var downloadToken = new Date().getTime();
+    document.getElementById( "downloadToken" ).value = downloadToken;
+    return downloadToken;
+}
+
+var downloadTimer;
+var attempts = 30;
+
+document.getElementById("submitButtonLoading").classList.add("d-none");
+document.getElementById("submitButton").setAttribute("disabled", "disabled");
+
+document.querySelector('.custom-file-input').addEventListener('change',function(e){
+  var files = document.getElementById("inputFile").files;
+  if (files && files.length > 0) {
+    var fileName = document.getElementById("inputFile").files[0].name;
+    var nextSibling = e.target.nextElementSibling
+    nextSibling.innerText = fileName
+
+    document.getElementById("submitButton").removeAttribute("disabled");
+  } else {
+    document.getElementById("submitButton").setAttribute("disabled", "disabled");
+  }
+})
+
+document.getElementById("convertForm").addEventListener('submit', function(e){
+  const downloadToken = setFormToken();
+  document.getElementById("submitButtonNormal").classList.add("d-none");
+  document.getElementById("submitButtonLoading").classList.remove("d-none");
+  document.getElementById("submitButton").setAttribute("disabled", "disabled");
+  downloadTimer = window.setInterval( function() {
+    var token = getCookie("downloadToken");
+    if( (token == downloadToken) || (attempts == 0) ) {
+      unblockSubmit();
+    }
+    attempts--;
+  }, 1000 );
+});
+
+function unblockSubmit() {
+  window.clearInterval(downloadTimer);
+  expireCookie("downloadToken");
+  attempts = 30;
+
+  document.getElementById("submitButtonNormal").classList.remove("d-none");
+  document.getElementById("submitButtonLoading").classList.add("d-none");
+  document.getElementById("submitButton").removeAttribute("disabled");
+  document.getElementById("inputFile").value = null;
+  document.getElementById("inputFile").nextElementSibling.innerText = null;
+  document.getElementById("submitButton").setAttribute("disabled", "disabled");
+}
+
+</script>
+{% block extra_script %}{% endblock %}
+</body>
+</html>
